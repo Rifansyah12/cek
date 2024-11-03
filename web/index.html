@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pelacakan Lokasi</title>
+  </head>
+  <body>
+    <h2>Pelacakan Lokasi</h2>
+    <p>
+      Klik tombol di bawah ini untuk mengirimkan lokasi Anda saat ini ke server.
+    </p>
+    <button onclick="sendLocation()">Kirim Lokasi</button>
+
+    <script>
+      function sendLocation() {
+        // Periksa apakah Geolocation API tersedia
+        if ("geolocation" in navigator) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              // Ambil koordinat latitude dan longitude
+              const latitude = position.coords.latitude;
+              const longitude = position.coords.longitude;
+
+              // Kirim data lokasi ke server menggunakan Fetch API
+              fetch("http://127.0.0.1:5000/update_location", {
+                // Ganti dengan URL server Anda
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  phone_number: "089696120616", // Ganti dengan nomor telepon yang ingin dikirim
+                  latitude: latitude,
+                  longitude: longitude,
+                }),
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  alert("Lokasi berhasil dikirim!");
+                  console.log("Response dari server:", data);
+                })
+                .catch((error) => {
+                  console.error("Error saat mengirim lokasi:", error);
+                  alert("Gagal mengirim lokasi.");
+                });
+            },
+            (error) => {
+              console.error("Error mendapatkan lokasi:", error);
+              alert("Gagal mendapatkan lokasi. Pastikan GPS Anda aktif.");
+            }
+          );
+        } else {
+          alert("Geolocation tidak didukung di perangkat Anda.");
+        }
+      }
+    </script>
+  </body>
+</html>
